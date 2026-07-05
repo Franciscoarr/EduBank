@@ -1,0 +1,115 @@
+# ==========================================
+# Android / Gradle
+# ==========================================
+
+.gradle/
+build/
+**/build/
+
+# Kotlin
+.kotlin/
+
+# ==========================================
+# Android Studio / IntelliJ
+# ==========================================
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Local SDK configuration
+local.properties
+
+# Navigation Editor
+.navigation/
+
+# Database inspector
+*.db
+*.sqlite
+
+# ==========================================
+# Firebase
+# ==========================================
+
+# Configuración de Firebase
+app/google-services.json
+
+# Si tienes más módulos con Firebase
+**/google-services.json
+
+# ==========================================
+# Keystores
+# ==========================================
+
+*.jks
+*.keystore
+*.pem
+*.p12
+
+# ==========================================
+# Capturas y archivos temporales
+# ==========================================
+
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Logs
+*.log
+
+# ==========================================
+# Sistema Operativo
+# ==========================================
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Linux
+*~
+
+# ==========================================
+# Archivos temporales
+# ==========================================
+
+*.tmp
+*.temp
+*.orig
+*.swp
+*.swo
+
+# ==========================================
+# Cache de Android Studio
+# ==========================================
+
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# ==========================================
+# Distribuciones
+# ==========================================
+
+*.apk
+*.aab
+
+# ==========================================
+# Firmas
+# ==========================================
+
+*.idsig
+
+# ==========================================
+# Crashlytics 
+# ==========================================
+
+com_crashlytics_export_strings.xml
+crashlytics-build.properties
+firebase-crashlytics.properties
