@@ -48,4 +48,18 @@ class TeacherDashboardViewModel @Inject constructor(
             }
         }
     }
+
+    fun createClass(name: String, grade: String) {
+        val teacherId = authRepository.currentUserUid ?: "profesor_de_prueba_123"
+
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            val result = teacherRepository.createClass(name, grade, teacherId)
+
+            if (result is Resource.Error) {
+                _state.update { it.copy(isLoading = false, errorMessage = result.message) }
+            }
+        }
+    }
 }

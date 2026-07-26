@@ -12,4 +12,6 @@ interface TeacherRepository {
     fun getStudentsByClass(classId: String): Flow<Resource<List<Student>>>
 
     suspend fun processTransaction(transaction: Transaction): Resource<Unit>
+
+    suspend fun createClass(name: String, grade: String, teacherId: String): Resource<Unit>
 }

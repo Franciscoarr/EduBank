@@ -110,4 +110,23 @@ class TeacherRepositoryImpl @Inject constructor(
             Resource.Error(e.message ?: "Error al procesar el pago", e)
         }
     }
+
+    override suspend fun createClass(name: String, grade: String, teacherId: String): Resource<Unit> {
+        return try {
+            val newClassRef = firestore.collection("classes").document()
+
+            val classroom = Classroom(
+                id = newClassRef.id,
+                teacherId = teacherId,
+                name = name,
+                grade = grade
+            )
+
+            newClassRef.set(classroom).await()
+
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error("Error al crear la clase: ${e.localizedMessage}", e)
+        }
+    }
 }

@@ -10,9 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +25,11 @@ import com.example.edubank.domain.model.Classroom
 @Composable
 fun TeacherDashboardScreen(
     viewModel: TeacherDashboardViewModel = hiltViewModel(),
-    onNavigateToClassDetail: (String) -> Unit,
-    onNavigateToCreateClass: () -> Unit
+    onNavigateToClassDetail: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
+    var showCreateDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -44,7 +43,7 @@ fun TeacherDashboardScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavigateToCreateClass,
+                onClick = { showCreateDialog = true },
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
@@ -58,17 +57,11 @@ fun TeacherDashboardScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
-            return@Scaffold
-        }
-
-        if (state.errorMessage != null) {
+        } else if (state.errorMessage != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = state.errorMessage!!, color = MaterialTheme.colorScheme.error)
             }
-            return@Scaffold
-        }
-
-        if (state.classes.isEmpty()) {
+        } else if (state.classes.isEmpty()) {
             EmptyClassesView(modifier = Modifier.padding(paddingValues))
         } else {
             LazyColumn(
@@ -77,7 +70,7 @@ fun TeacherDashboardScreen(
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp) // Espacio para el FAB
+                contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp)
             ) {
                 items(state.classes) { classroom ->
                     ClassroomCard(
@@ -87,9 +80,69 @@ fun TeacherDashboardScreen(
                 }
             }
         }
+
+        if (showCreateDialog) {
+            CreateClassDialog(
+                onDismiss = { showCreateDialog = false },
+                onConfirm = { className, gradeName ->
+                    viewModel.createClass(className, gradeName)
+                    showCreateDialog = false
+                }
+            )
+        }
     }
 }
 
+@Composable
+fun CreateClassDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String, String) -> Unit
+) {
+    var className by remember { mutableStateOf("") }
+    var gradeName by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Crear nueva clase", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = className,
+                    onValueChange = { className = it },
+                    label = { Text("Nombre (Ej: Los Leones)") },
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    value = gradeName,
+                    onValueChange = { gradeName = it },
+                    label = { Text("Curso (Ej: 5ºA)") },
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(className, gradeName) },
+                enabled = className.isNotBlank() && gradeName.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text("Crear", color = MaterialTheme.colorScheme.onSecondary, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = Color.Gray)
+            }
+        },
+        shape = RoundedCornerShape(24.dp)
+    )
+}
+
+// ... (Mantén aquí las funciones ClassroomCard y EmptyClassesView que ya tenías)
 @Composable
 fun ClassroomCard(classroom: Classroom, onClick: () -> Unit) {
     Card(
