@@ -17,6 +17,8 @@ import com.example.edubank.core.navigation.AppScreens
 import com.example.edubank.presentation.auth.role_selection.RoleSelectionScreen
 import com.example.edubank.presentation.auth.student_login.StudentLoginScreen
 import com.example.edubank.presentation.student.dashboard.StudentDashboardScreen
+import com.example.edubank.presentation.teacher.class_detail.ClassDetailScreen
+import com.example.edubank.presentation.teacher.dashboard.TeacherDashboardScreen
 import com.example.edubank.ui.theme.EduBankTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,7 +51,7 @@ fun EduBankNavHost() {
         composable(AppScreens.RoleSelection.route) {
             RoleSelectionScreen(
                 onStudentClick = { navController.navigate(AppScreens.StudentLogin.route) },
-                onTeacherClick = { /* TODO en el futuro */ },
+                onTeacherClick = { navController.navigate(AppScreens.TeacherDashboard.route) },
                 onParentClick = { /* TODO en el futuro */ }
             )
         }
@@ -72,6 +74,32 @@ fun EduBankNavHost() {
             StudentDashboardScreen(
                 onNavigateToQuests = { /* TODO: Navegar a historial */ },
                 onNavigateToTrophies = { /* TODO: Navegar a logros */ }
+            )
+        }
+
+        composable(AppScreens.TeacherDashboard.route) {
+            TeacherDashboardScreen(
+                onNavigateToClassDetail = { classId ->
+                    navController.navigate(AppScreens.ClassDetail.createRoute(classId))
+                },
+                onNavigateToCreateClass = {
+                    // TODO: Aquí mostraremos un diálogo para crear la clase
+                }
+            )
+        }
+
+        composable(
+            route = AppScreens.ClassDetail.route,
+            arguments = listOf(navArgument("classId") { type = NavType.StringType })
+        ) {
+            ClassDetailScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToStudentManage = { studentId ->
+                    // TODO: Navegar a la pantalla de Dar/Quitar dinero
+                },
+                onNavigateToAddStudent = {
+                    // TODO: Añadir alumno
+                }
             )
         }
     }
