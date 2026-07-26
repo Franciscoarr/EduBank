@@ -2,8 +2,10 @@ package com.example.edubank.core.di
 
 import com.example.edubank.data.repository.AuthRepositoryImpl
 import com.example.edubank.data.repository.StudentRepositoryImpl
+import com.example.edubank.data.repository.TeacherRepositoryImpl
 import com.example.edubank.domain.repository.AuthRepository
 import com.example.edubank.domain.repository.StudentRepository
+import com.example.edubank.domain.repository.TeacherRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,4 +27,10 @@ abstract class RepositoryModule {
     abstract fun bindStudentRepository(
         studentRepositoryImpl: StudentRepositoryImpl
     ): StudentRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTeacherRepository(
+        teacherRepositoryImpl: TeacherRepositoryImpl
+    ): TeacherRepository
 }

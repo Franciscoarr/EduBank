@@ -1,0 +1,15 @@
+package com.example.edubank.domain.repository
+
+import com.example.edubank.core.utils.Resource
+import com.example.edubank.domain.model.Classroom
+import com.example.edubank.domain.model.Student
+import com.example.edubank.domain.model.Transaction
+import kotlinx.coroutines.flow.Flow
+
+interface TeacherRepository {
+    fun getTeacherClasses(teacherId: String): Flow<Resource<List<Classroom>>>
+
+    fun getStudentsByClass(classId: String): Flow<Resource<List<Student>>>
+
+    suspend fun processTransaction(transaction: Transaction): Resource<Unit>
+}
