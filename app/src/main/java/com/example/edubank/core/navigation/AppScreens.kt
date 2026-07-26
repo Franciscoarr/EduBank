@@ -13,7 +13,10 @@ sealed class AppScreens(val route: String) {
         fun createRoute(classId: String) = "class_detail/$classId"
     }
 
-    object StudentDashboard : AppScreens("student_dashboard")
+    object StudentLogin : AppScreens("student_login_screen")
+    object StudentDashboard : AppScreens("student_dashboard/{studentId}") {
+        fun createRoute(studentId: String) = "student_dashboard/$studentId"
+    }
     object StudentQuests : AppScreens("student_quests")
 
     object ParentDashboard : AppScreens("parent_dashboard")
