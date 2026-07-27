@@ -81,9 +81,6 @@ fun EduBankNavHost() {
             TeacherDashboardScreen(
                 onNavigateToClassDetail = { classId ->
                     navController.navigate(AppScreens.ClassDetail.createRoute(classId))
-                },
-                onNavigateToCreateClass = {
-                    // TODO: Aquí mostraremos un diálogo para crear la clase
                 }
             )
         }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import java.util.UUID
 
 class TeacherRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
@@ -127,6 +128,29 @@ class TeacherRepositoryImpl @Inject constructor(
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error("Error al crear la clase: ${e.localizedMessage}", e)
+        }
+    }
+
+    override suspend fun createStudent(classId: String, teacherId: String, username: String, pin: String): Resource<Unit> {
+        return try {
+            val newStudentRef = firestore.collection("students").document()
+
+            val student = Student(
+                id = newStudentRef.id,
+                classId = classId,
+                teacherId = teacherId,
+                username = username,
+                balance = 0.0,
+                xp = 0,
+                level = 1,
+                pinHash = pin,
+                qrPairingCode = UUID.randomUUID().toString().substring(0, 8)
+            )
+
+            newStudentRef.set(student).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error("Error al matricular alumno: ${e.localizedMessage}", e)
         }
     }
 }

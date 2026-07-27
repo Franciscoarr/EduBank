@@ -9,5 +9,6 @@ data class Student(
     val xp: Int = 0,
     val level: Int = 1,
     val avatarId: String = "default_avatar",
-    val qrPairingCode: String = ""
+    val qrPairingCode: String = "",
+    val pinHash: String
 )

@@ -14,4 +14,6 @@ interface TeacherRepository {
     suspend fun processTransaction(transaction: Transaction): Resource<Unit>
 
     suspend fun createClass(name: String, grade: String, teacherId: String): Resource<Unit>
+
+    suspend fun createStudent(classId: String, teacherId: String, username: String, pin: String): Resource<Unit>
 }
