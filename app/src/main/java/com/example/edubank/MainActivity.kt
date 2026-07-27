@@ -18,6 +18,7 @@ import com.example.edubank.presentation.auth.role_selection.RoleSelectionScreen
 import com.example.edubank.presentation.auth.student_login.StudentLoginScreen
 import com.example.edubank.presentation.student.dashboard.StudentDashboardScreen
 import com.example.edubank.presentation.teacher.class_detail.ClassDetailScreen
+import com.example.edubank.presentation.teacher.student_manage.StudentManageScreen
 import com.example.edubank.presentation.teacher.dashboard.TeacherDashboardScreen
 import com.example.edubank.ui.theme.EduBankTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -92,11 +93,20 @@ fun EduBankNavHost() {
             ClassDetailScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToStudentManage = { studentId ->
-                    // TODO: Navegar a la pantalla de Dar/Quitar dinero
+                    navController.navigate(AppScreens.StudentManage.createRoute(studentId))
                 },
                 onNavigateToAddStudent = {
                     // TODO: Añadir alumno
                 }
+            )
+        }
+
+        composable(
+            route = AppScreens.StudentManage.route,
+            arguments = listOf(navArgument("studentId") { type = NavType.StringType })
+        ) {
+            StudentManageScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

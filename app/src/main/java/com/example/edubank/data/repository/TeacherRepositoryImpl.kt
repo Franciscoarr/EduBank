@@ -153,4 +153,27 @@ class TeacherRepositoryImpl @Inject constructor(
             Resource.Error("Error al matricular alumno: ${e.localizedMessage}", e)
         }
     }
+
+    override fun getStudentById(studentId: String): Flow<Resource<Student>> = callbackFlow {
+        trySend(Resource.Loading)
+
+        val listener = firestore.collection("students").document(studentId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(Resource.Error("Error al cargar el alumno", error))
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val student = snapshot.toObject(Student::class.java)?.copy(id = snapshot.id)
+                    if (student != null) {
+                        trySend(Resource.Success(student))
+                    }
+                } else {
+                    trySend(Resource.Error("El alumno no existe"))
+                }
+            }
+
+        awaitClose { listener.remove() }
+    }
 }

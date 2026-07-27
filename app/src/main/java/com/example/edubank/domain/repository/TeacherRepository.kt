@@ -16,4 +16,6 @@ interface TeacherRepository {
     suspend fun createClass(name: String, grade: String, teacherId: String): Resource<Unit>
 
     suspend fun createStudent(classId: String, teacherId: String, username: String, pin: String): Resource<Unit>
+
+    fun getStudentById(studentId: String): Flow<Resource<Student>>
 }

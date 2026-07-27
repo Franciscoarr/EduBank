@@ -10,5 +10,5 @@ data class Student(
     val level: Int = 1,
     val avatarId: String = "default_avatar",
     val qrPairingCode: String = "",
-    val pinHash: String
+    val pinHash: String = ""
 )
