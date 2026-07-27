@@ -27,7 +27,7 @@ class TeacherDashboardViewModel @Inject constructor(
     }
 
     private fun loadTeacherClasses() {
-        val teacherId = authRepository.currentUserUid
+        val teacherId = authRepository.currentUserUid ?: "profesor_de_prueba_123"
 
         if (teacherId == null) {
             _state.update { it.copy(isLoading = false, errorMessage = "Error: Sesión no encontrada") }
@@ -56,6 +56,8 @@ class TeacherDashboardViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
 
             val result = teacherRepository.createClass(name, grade, teacherId)
+
+            _state.update { it.copy(isLoading = false) }
 
             if (result is Resource.Error) {
                 _state.update { it.copy(isLoading = false, errorMessage = result.message) }

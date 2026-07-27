@@ -55,7 +55,10 @@ class ClassDetailViewModel @Inject constructor(
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
+
             val result = teacherRepository.createStudent(classId, teacherId, username, pin)
+
+            _state.update { it.copy(isLoading = false) }
 
             if (result is Resource.Error) {
                 _state.update { it.copy(isLoading = false, errorMessage = result.message) }
