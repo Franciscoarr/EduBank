@@ -18,6 +18,7 @@ import com.example.edubank.presentation.auth.role_selection.RoleSelectionScreen
 import com.example.edubank.presentation.auth.student_login.StudentLoginScreen
 import com.example.edubank.presentation.student.dashboard.StudentDashboardScreen
 import com.example.edubank.presentation.teacher.class_detail.ClassDetailScreen
+import com.example.edubank.presentation.teacher.class_rules.ClassRulesScreen
 import com.example.edubank.presentation.teacher.student_manage.StudentManageScreen
 import com.example.edubank.presentation.teacher.dashboard.TeacherDashboardScreen
 import com.example.edubank.ui.theme.EduBankTheme
@@ -95,8 +96,9 @@ fun EduBankNavHost() {
                 onNavigateToStudentManage = { studentId ->
                     navController.navigate(AppScreens.StudentManage.createRoute(studentId))
                 },
-                onNavigateToAddStudent = {
-                    // TODO: Añadir alumno
+                onNavigateToRules = {
+                    val classId = it.arguments?.getString("classId") ?: ""
+                    navController.navigate(AppScreens.ClassRules.createRoute(classId))
                 }
             )
         }
@@ -108,6 +110,13 @@ fun EduBankNavHost() {
             StudentManageScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
+        }
+
+        composable(
+            route = AppScreens.ClassRules.route,
+            arguments = listOf(navArgument("classId") { type = NavType.StringType })
+        ) {
+            ClassRulesScreen(onNavigateBack = { navController.popBackStack() })
         }
     }
 }

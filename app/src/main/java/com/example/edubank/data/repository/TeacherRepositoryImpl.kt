@@ -188,6 +188,24 @@ class TeacherRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateCustomReward(reward: CustomReward): Resource<Unit> {
+        return try {
+            firestore.collection("custom_rewards").document(reward.id).set(reward).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error("Error al actualizar regla: ${e.localizedMessage}", e)
+        }
+    }
+
+    override suspend fun deleteCustomReward(rewardId: String): Resource<Unit> {
+        return try {
+            firestore.collection("custom_rewards").document(rewardId).delete().await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error("Error al borrar regla: ${e.localizedMessage}", e)
+        }
+    }
+
     override fun getCustomRewardsByClass(classId: String): Flow<Resource<List<CustomReward>>> = callbackFlow {
         trySend(Resource.Loading)
         val listener = firestore.collection("custom_rewards")

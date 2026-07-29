@@ -35,12 +35,11 @@ fun ClassDetailScreen(
     viewModel: ClassDetailViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToStudentManage: (String) -> Unit,
-    onNavigateToAddStudent: () -> Unit
+    onNavigateToRules: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     var showCreateStudentDialog by remember { mutableStateOf(false) }
-    var showCreateRewardDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -52,8 +51,8 @@ fun ClassDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showCreateRewardDialog = true }) {
-                        Icon(Icons.Default.Star, contentDescription = "Crear Recompensa", tint = MaterialTheme.colorScheme.secondary)
+                    IconButton(onClick = onNavigateToRules) {
+                        Icon(Icons.Default.Star, contentDescription = "Reglas", tint = MaterialTheme.colorScheme.secondary)
                     }
                     IconButton(onClick = { showCreateStudentDialog = true }) {
                         Icon(Icons.Default.PersonAdd, contentDescription = "Añadir alumno", tint = MaterialTheme.colorScheme.primary)
@@ -106,16 +105,6 @@ fun ClassDetailScreen(
                 onConfirm = { username, pin ->
                     viewModel.createStudent(username, pin)
                     showCreateStudentDialog = false
-                }
-            )
-        }
-
-        if (showCreateRewardDialog) {
-            CreateRewardDialog(
-                onDismiss = { showCreateRewardDialog = false },
-                onConfirm = { name, amount, isIncome, day ->
-                    viewModel.createCustomReward(name, amount, isIncome, day)
-                    showCreateRewardDialog = false
                 }
             )
         }
@@ -230,72 +219,5 @@ fun CreateStudentDialog(
             }
         },
         shape = RoundedCornerShape(24.dp)
-    )
-}
-
-@Composable
-fun CreateRewardDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (String, Double, Boolean, Int?) -> Unit
-) {
-    var name by remember { mutableStateOf("") }
-    var amountStr by remember { mutableStateOf("") }
-    var isIncome by remember { mutableStateOf(true) }
-    var isAuto by remember { mutableStateOf(false) }
-    var dayStr by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Nueva Regla/Pago", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = name, onValueChange = { name = it },
-                    label = { Text("Nombre") },
-                    singleLine = true, modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = amountStr, onValueChange = { amountStr = it },
-                    label = { Text("Cantidad (🪙)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true, modifier = Modifier.fillMaxWidth()
-                )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(if (isIncome) "Recompensa (+)" else "Penalización (-)",
-                        color = if (isIncome) Color(0xFF06D6A0) else Color(0xFFEF476F),
-                        fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                    Switch(checked = isIncome, onCheckedChange = { isIncome = it })
-                }
-
-                Divider()
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Pago Automático mensual", fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                    Switch(checked = isAuto, onCheckedChange = { isAuto = it })
-                }
-
-                if (isAuto) {
-                    OutlinedTextField(
-                        value = dayStr, onValueChange = { if(it.length <= 2) dayStr = it },
-                        label = { Text("Día del mes (1-31)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true, modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val amount = amountStr.toDoubleOrNull() ?: 0.0
-                    val day = if (isAuto) dayStr.toIntOrNull() else null
-                    onConfirm(name, amount, isIncome, day)
-                },
-                enabled = name.isNotBlank() && amountStr.isNotBlank() && (!isAuto || dayStr.isNotBlank())
-            ) { Text("Crear") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }

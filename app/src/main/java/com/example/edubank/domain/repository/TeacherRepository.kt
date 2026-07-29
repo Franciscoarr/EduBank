@@ -22,5 +22,9 @@ interface TeacherRepository {
 
     suspend fun createCustomReward(reward: CustomReward): Resource<Unit>
 
+    suspend fun updateCustomReward(reward: CustomReward): Resource<Unit>
+
+    suspend fun deleteCustomReward(rewardId: String): Resource<Unit>
+
     fun getCustomRewardsByClass(classId: String): Flow<Resource<List<CustomReward>>>
 }
