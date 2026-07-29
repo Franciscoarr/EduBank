@@ -19,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,31 +67,67 @@ fun StudentManageScreen(
                 )
             }
 
-            item {
-                Text("Recompensas (+)", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF06D6A0))
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TransactionButton(text = "Tarea (+10)", amount = 10.0, color = Color(0xFF06D6A0), isIncome = true, onClick = {
-                        viewModel.processTransaction(10.0, "Hacer la tarea", true)
-                    }, modifier = Modifier.weight(1f))
+            val incomes = state.manualRewards.filter { it.isIncome }
+            if (incomes.isNotEmpty()) {
+                item {
+                    Text("Recompensas (+)", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF06D6A0))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    TransactionButton(text = "Ayudar (+5)", amount = 5.0, color = Color(0xFF06D6A0), isIncome = true, onClick = {
-                        viewModel.processTransaction(5.0, "Ayudar a un compañero", true)
-                    }, modifier = Modifier.weight(1f))
+                    @OptIn(ExperimentalLayoutApi::class)
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        incomes.forEach { reward ->
+                            TransactionButton(
+                                text = "${reward.name} (+${reward.amount})",
+                                amount = reward.amount,
+                                color = Color(0xFF06D6A0),
+                                isIncome = true,
+                                onClick = {
+                                    viewModel.processTransaction(reward.amount, reward.name, true)
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
-            item {
-                Text("Penalizaciones (-)", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEF476F))
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TransactionButton(text = "Mal comp. (-5)", amount = 5.0, color = Color(0xFFEF476F), isIncome = false, onClick = {
-                        viewModel.processTransaction(5.0, "Mal comportamiento", false)
-                    }, modifier = Modifier.weight(1f))
+            val expenses = state.manualRewards.filter { !it.isIncome }
+            if (expenses.isNotEmpty()) {
+                item {
+                    Text("Penalizaciones (-)", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEF476F))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    TransactionButton(text = "Material (-2)", amount = 2.0, color = Color(0xFFEF476F), isIncome = false, onClick = {
-                        viewModel.processTransaction(2.0, "Olvidar material", false)
-                    }, modifier = Modifier.weight(1f))
+                    @OptIn(ExperimentalLayoutApi::class)
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        expenses.forEach { penalty ->
+                            TransactionButton(
+                                text = "${penalty.name} (-${penalty.amount})",
+                                amount = penalty.amount,
+                                color = Color(0xFFEF476F),
+                                isIncome = false,
+                                onClick = {
+                                    viewModel.processTransaction(penalty.amount, penalty.name, false)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (incomes.isEmpty() && expenses.isEmpty()) {
+                item {
+                    Text(
+                        text = "Aún no has creado reglas manuales para esta clase. Usa el icono de la Estrella en la pantalla anterior para añadirlas.",
+                        color = Color.Gray,
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
             }
 

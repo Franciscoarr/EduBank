@@ -3,6 +3,7 @@ package com.example.edubank.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.edubank.core.utils.Resource
 import com.example.edubank.domain.model.Classroom
+import com.example.edubank.domain.model.CustomReward
 import com.example.edubank.domain.model.Student
 import com.example.edubank.domain.model.Transaction
 import com.example.edubank.domain.repository.TeacherRepository
@@ -174,6 +175,33 @@ class TeacherRepositoryImpl @Inject constructor(
                 }
             }
 
+        awaitClose { listener.remove() }
+    }
+
+    override suspend fun createCustomReward(reward: CustomReward): Resource<Unit> {
+        return try {
+            val newRewardRef = firestore.collection("custom_rewards").document()
+            newRewardRef.set(reward.copy(id = newRewardRef.id)).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error("Error al guardar recompensa: ${e.localizedMessage}", e)
+        }
+    }
+
+    override fun getCustomRewardsByClass(classId: String): Flow<Resource<List<CustomReward>>> = callbackFlow {
+        trySend(Resource.Loading)
+        val listener = firestore.collection("custom_rewards")
+            .whereEqualTo("classId", classId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(Resource.Error("Error al cargar reglas", error))
+                    return@addSnapshotListener
+                }
+                val rules = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(CustomReward::class.java)?.copy(id = doc.id)
+                } ?: emptyList()
+                trySend(Resource.Success(rules))
+            }
         awaitClose { listener.remove() }
     }
 }

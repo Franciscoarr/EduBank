@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.edubank.core.utils.Resource
+import com.example.edubank.domain.model.CustomReward
 import com.example.edubank.domain.repository.AuthRepository
 import com.example.edubank.domain.repository.TeacherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,6 +63,26 @@ class ClassDetailViewModel @Inject constructor(
 
             if (result is Resource.Error) {
                 _state.update { it.copy(isLoading = false, errorMessage = result.message) }
+            }
+        }
+    }
+
+    fun createCustomReward(name: String, amount: Double, isIncome: Boolean, autoDayOfMonth: Int?) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            val reward = CustomReward(
+                classId = classId,
+                name = name,
+                amount = amount,
+                isIncome = isIncome,
+                autoDayOfMonth = autoDayOfMonth
+            )
+
+            val result = teacherRepository.createCustomReward(reward)
+            _state.update { it.copy(isLoading = false) }
+            if (result is Resource.Error) {
+                _state.update { it.copy(errorMessage = result.message) }
             }
         }
     }

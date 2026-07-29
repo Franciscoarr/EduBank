@@ -38,12 +38,24 @@ class StudentManageViewModel @Inject constructor(
             teacherRepository.getStudentById(id).collect { result ->
                 when (result) {
                     is Resource.Loading -> _state.update { it.copy(isLoading = true) }
-                    is Resource.Success -> _state.update {
-                        it.copy(isLoading = false, student = result.data, errorMessage = null)
+                    is Resource.Success -> {
+                        val studentData = result.data
+                        _state.update { it.copy(isLoading = false, student = studentData, errorMessage = null) }
+
+                        loadManualRewards(studentData.classId)
                     }
-                    is Resource.Error -> _state.update {
-                        it.copy(isLoading = false, errorMessage = result.message)
-                    }
+                    is Resource.Error -> _state.update { it.copy(isLoading = false, errorMessage = result.message) }
+                }
+            }
+        }
+    }
+
+    private fun loadManualRewards(classId: String) {
+        viewModelScope.launch {
+            teacherRepository.getCustomRewardsByClass(classId).collect { result ->
+                if (result is Resource.Success) {
+                    val manualRules = result.data.filter { it.autoDayOfMonth == null }
+                    _state.update { it.copy(manualRewards = manualRules) }
                 }
             }
         }
